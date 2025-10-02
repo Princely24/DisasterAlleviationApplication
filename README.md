@@ -52,9 +52,9 @@ Update `appsettings.json`:
 
 ```json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=DisasterReliefDB;Trusted_Connection=True;"
-  }
+    "ConnectionStrings": {
+       "DefaultConnection": "Server=tcp:giftofgivers-disasterrelief-prod.database.windows.net,1433;Initial Catalog=GiftOfGivers_DisasterRelief_DB_Dev1;Persist Security Info=False;User ID=ST10263265;Password=Poggyboled@100P;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+     }
 }
 ```
 
