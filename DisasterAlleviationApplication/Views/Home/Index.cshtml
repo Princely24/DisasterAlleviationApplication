@@ -1,0 +1,195 @@
+@model DisasterAlleviationApplication.Controllers.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-hands-helping me-3"></i>Disaster Relief Platform
+        </h1>
+        <p class="lead mb-4">Connecting communities, coordinating relief efforts, and making a difference when it matters most.</p>
+        @if (!User.Identity!.IsAuthenticated)
+        {
+            <div class="mt-4">
+                <a class="btn btn-light btn-lg me-3" asp-area="Identity" asp-page="/Account/Register">
+                    <i class="fas fa-user-plus me-2"></i>Join Our Community
+                </a>
+                <a class="btn btn-outline-light btn-lg me-3" asp-area="Identity" asp-page="/Account/Login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+                <a class="btn btn-warning btn-lg" asp-controller="Admin" asp-action="Login">
+                    <i class="fas fa-user-shield me-2"></i>Admin Login
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="mt-4">
+                <a class="btn btn-light btn-lg me-3" asp-controller="Home" asp-action="Dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                </a>
+                <a class="btn btn-outline-light btn-lg" asp-controller="Incident" asp-action="Create">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Report Incident
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-3 mb-4">
+        <div class="card border-primary h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Disaster Incidents</h5>
+                <h2 class="text-primary">@Model.TotalIncidents</h2>
+                <p class="card-text">Total incidents reported</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-success h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-gift fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Donations</h5>
+                <h2 class="text-success">@Model.TotalDonations</h2>
+                <p class="card-text">Total donations received</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-info h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Volunteers</h5>
+                <h2 class="text-info">@Model.TotalVolunteers</h2>
+                <p class="card-text">Registered volunteers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-warning h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Active Tasks</h5>
+                <h2 class="text-warning">@Model.ActiveTasks</h2>
+                <p class="card-text">Tasks needing volunteers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Recent Incidents
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentIncidents.Any())
+                {
+                    @foreach (var incident in Model.RecentIncidents)
+                    {
+                        <div class="border-bottom pb-2 mb-2">
+                            <h6 class="mb-1">@incident.Title</h6>
+                            <p class="text-muted mb-1 small">@incident.Location - @incident.ReportedDate.ToString("MMM dd, yyyy")</p>
+                            <span class="badge bg-@(incident.Severity switch {
+                                DisasterAlleviationApplication.Models.IncidentSeverity.Low => "success",
+                                DisasterAlleviationApplication.Models.IncidentSeverity.Medium => "warning",
+                                DisasterAlleviationApplication.Models.IncidentSeverity.High => "danger",
+                                DisasterAlleviationApplication.Models.IncidentSeverity.Critical => "dark",
+                                _ => "secondary"
+                            })">@incident.Severity</span>
+                        </div>
+                    }
+                    <div class="text-center mt-3">
+                        <a asp-controller="Incident" asp-action="Index" class="btn btn-outline-primary btn-sm">View All Incidents</a>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">No recent incidents reported.</p>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-gift me-2"></i>Recent Donations
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentDonations.Any())
+                {
+                    @foreach (var donation in Model.RecentDonations)
+                    {
+                        <div class="border-bottom pb-2 mb-2">
+                            <h6 class="mb-1">@donation.ItemName</h6>
+                            <p class="text-muted mb-1 small">@donation.Quantity @donation.Unit - @donation.DonationDate.ToString("MMM dd, yyyy")</p>
+                            <span class="badge bg-@(donation.Status switch {
+                                DisasterAlleviationApplication.Models.DonationStatus.Pending => "warning",
+                                DisasterAlleviationApplication.Models.DonationStatus.Approved => "info",
+                                DisasterAlleviationApplication.Models.DonationStatus.Collected => "primary",
+                                DisasterAlleviationApplication.Models.DonationStatus.InTransit => "secondary",
+                                DisasterAlleviationApplication.Models.DonationStatus.Distributed => "success",
+                                _ => "secondary"
+                            })">@donation.Status</span>
+                        </div>
+                    }
+                    <div class="text-center mt-3">
+                        <a asp-controller="Donation" asp-action="Index" class="btn btn-outline-success btn-sm">View All Donations</a>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">No recent donations received.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User.Identity!.IsAuthenticated)
+{
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-rocket me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Incident" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Report Incident
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Donation" asp-action="Create" class="btn btn-success w-100">
+                                <i class="fas fa-gift me-2"></i>Make Donation
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Volunteer" asp-action="Create" class="btn btn-info w-100">
+                                <i class="fas fa-user-plus me-2"></i>Become Volunteer
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Task" asp-action="Index" class="btn btn-warning w-100">
+                                <i class="fas fa-tasks me-2"></i>Browse Tasks
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

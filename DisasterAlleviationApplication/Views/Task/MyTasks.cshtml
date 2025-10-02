@@ -1,0 +1,283 @@
+@model IEnumerable<DisasterAlleviationApplication.Models.VolunteerAssignment>
+
+@{
+    ViewData["Title"] = "My Tasks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-clipboard-check me-2"></i>My Volunteer Tasks</h2>
+    <a asp-controller="Task" asp-action="Index" class="btn btn-primary">
+        <i class="fas fa-search me-1"></i>Browse More Tasks
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">My Task Assignments</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Category</th>
+                                    <th>Location</th>
+                                    <th>Schedule</th>
+                                    <th>Hours Worked</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var assignment in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@assignment.Task.Title</strong>
+                                            @if (!string.IsNullOrEmpty(assignment.Task.Description))
+                                            {
+                                                <br><small class="text-muted">@(assignment.Task.Description.Length > 60 ? assignment.Task.Description.Substring(0, 60) + "..." : assignment.Task.Description)</small>
+                                            }
+                                            @if (assignment.Task.Priority == DisasterAlleviationApplication.Models.TaskPriority.Critical)
+                                            {
+                                                <br><span class="badge bg-danger mt-1">Critical</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@assignment.Task.Category</span>
+                                        </td>
+                                        <td>
+                                            @assignment.Task.Location
+                                        </td>
+                                        <td>
+                                            <small>
+                                                Start: @assignment.Task.StartDate.ToString("MMM dd, yyyy")<br>
+                                                End: @assignment.Task.EndDate.ToString("MMM dd, yyyy")
+                                                @if (assignment.StartDate.HasValue)
+                                                {
+                                                    <br><span class="text-info">Started: @assignment.StartDate.Value.ToString("MMM dd")</span>
+                                                }
+                                            </small>
+                                        </td>
+                                        <td>
+                                            @if (assignment.HoursWorked.HasValue)
+                                            {
+                                                <span class="badge bg-primary">@assignment.HoursWorked hours</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not started</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(assignment.Status switch {
+                                                DisasterAlleviationApplication.Models.AssignmentStatus.Assigned => "warning",
+                                                DisasterAlleviationApplication.Models.AssignmentStatus.Accepted => "info",
+                                                DisasterAlleviationApplication.Models.AssignmentStatus.InProgress => "primary",
+                                                DisasterAlleviationApplication.Models.AssignmentStatus.Completed => "success",
+                                                DisasterAlleviationApplication.Models.AssignmentStatus.Cancelled => "danger",
+                                                DisasterAlleviationApplication.Models.AssignmentStatus.NoShow => "dark",
+                                                _ => "secondary"
+                                            })">@assignment.Status</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-controller="Task" asp-action="Details" asp-route-id="@assignment.Task.Id" class="btn btn-sm btn-outline-primary" title="View Task Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (assignment.Status == DisasterAlleviationApplication.Models.AssignmentStatus.Assigned)
+                                                {
+                                                    <button class="btn btn-sm btn-success" onclick="acceptTask(@assignment.Id)" title="Accept Task">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                }
+                                                @if (assignment.Status == DisasterAlleviationApplication.Models.AssignmentStatus.Accepted)
+                                                {
+                                                    <button class="btn btn-sm btn-primary" onclick="startTask(@assignment.Id)" title="Start Task">
+                                                        <i class="fas fa-play"></i>
+                                                    </button>
+                                                }
+                                                @if (assignment.Status == DisasterAlleviationApplication.Models.AssignmentStatus.InProgress)
+                                                {
+                                                    <button class="btn btn-sm btn-success" onclick="completeTask(@assignment.Id)" title="Complete Task">
+                                                        <i class="fas fa-flag-checkered"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-check fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Task Assignments</h4>
+                        <p class="text-muted">You haven't been assigned to any tasks yet. Browse available tasks and apply!</p>
+                        <a asp-controller="Task" asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>Browse Available Tasks
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                <h5>Assigned</h5>
+                <h2 class="text-warning">@Model.Count(a => a.Status == DisasterAlleviationApplication.Models.AssignmentStatus.Assigned)</h2>
+                <p class="text-muted mb-0">Awaiting acceptance</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <i class="fas fa-play fa-3x text-primary mb-3"></i>
+                <h5>In Progress</h5>
+                <h2 class="text-primary">@Model.Count(a => a.Status == DisasterAlleviationApplication.Models.AssignmentStatus.InProgress)</h2>
+                <p class="text-muted mb-0">Currently working</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <i class="fas fa-check fa-3x text-success mb-3"></i>
+                <h5>Completed</h5>
+                <h2 class="text-success">@Model.Count(a => a.Status == DisasterAlleviationApplication.Models.AssignmentStatus.Completed)</h2>
+                <p class="text-muted mb-0">Successfully finished</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-3x text-info mb-3"></i>
+                <h5>Total Hours</h5>
+                <h2 class="text-info">@Model.Where(a => a.HoursWorked.HasValue).Sum(a => a.HoursWorked.Value)</h2>
+                <p class="text-muted mb-0">Volunteer hours</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Volunteer Performance
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Recent Feedback</h6>
+                            @if (Model.Any(a => !string.IsNullOrEmpty(a.Feedback)))
+                            {
+                                @foreach (var assignment in Model.Where(a => !string.IsNullOrEmpty(a.Feedback)).Take(3))
+                                {
+                                    <div class="border-bottom pb-2 mb-2">
+                                        <strong>@assignment.Task.Title</strong>
+                                        <p class="text-muted small mb-1">@assignment.Feedback</p>
+                                        @if (assignment.Rating.HasValue)
+                                        {
+                                            <div>
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="fas fa-star @(i <= assignment.Rating ? "text-warning" : "text-muted")"></i>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-muted">No feedback received yet.</p>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Task Completion Rate</h6>
+                            @{
+                                var totalTasks = Model.Count();
+                                var completedTasks = Model.Count(a => a.Status == DisasterAlleviationApplication.Models.AssignmentStatus.Completed);
+                                var completionRate = totalTasks > 0 ? (double)completedTasks / totalTasks * 100 : 0;
+                            }
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-success" style="width: @completionRate%"></div>
+                            </div>
+                            <p class="text-muted small">@completedTasks out of @totalTasks tasks completed (@completionRate.ToString("F1")%)</p>
+                            
+                            <h6 class="mt-4">Average Rating</h6>
+                            @{
+                                var ratedTasks = Model.Where(a => a.Rating.HasValue).ToList();
+                                var averageRating = ratedTasks.Any() ? ratedTasks.Average(a => a.Rating.Value) : 0;
+                            }
+                            @if (averageRating > 0)
+                            {
+                                <div class="mb-2">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star @(i <= Math.Round(averageRating) ? "text-warning" : "text-muted")"></i>
+                                    }
+                                    <span class="ms-2">@averageRating.ToString("F1")/5.0</span>
+                                </div>
+                                <p class="text-muted small">Based on @ratedTasks.Count feedback</p>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No ratings received yet.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function acceptTask(assignmentId) {
+            if (confirm('Are you sure you want to accept this task?')) {
+                // In a real application, this would make an AJAX call to update the task status
+                alert('Task accepted! You can now start working on it.');
+                location.reload();
+            }
+        }
+
+        function startTask(assignmentId) {
+            if (confirm('Are you ready to start this task?')) {
+                // In a real application, this would make an AJAX call to update the task status
+                alert('Task started! Remember to log your hours when you finish.');
+                location.reload();
+            }
+        }
+
+        function completeTask(assignmentId) {
+            const hours = prompt('How many hours did you work on this task?');
+            if (hours && !isNaN(hours) && hours > 0) {
+                // In a real application, this would make an AJAX call to update the task status and hours
+                alert('Task completed! Thank you for your volunteer work.');
+                location.reload();
+            }
+        }
+    </script>
+}

@@ -1,0 +1,187 @@
+@model DisasterAlleviationApplication.Models.VolunteerTask
+
+@{
+    ViewData["Title"] = "Create Task";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus me-2"></i>Create Volunteer Task
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" placeholder="Brief, descriptive title for the task" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Detailed description of what volunteers will be doing"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Category" class="form-label"></label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="">Select Category</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.ReliefDistribution">Relief Distribution</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.SearchAndRescue">Search and Rescue</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.MedicalSupport">Medical Support</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Logistics">Logistics</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Communication">Communication</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Fundraising">Fundraising</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Administrative">Administrative</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Cleanup">Cleanup</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Transportation">Transportation</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskCategory.Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Priority" class="form-label"></label>
+                            <select asp-for="Priority" class="form-select">
+                                <option value="@DisasterAlleviationApplication.Models.TaskPriority.Low">Low Priority</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskPriority.Medium">Medium Priority</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskPriority.High">High Priority</option>
+                                <option value="@DisasterAlleviationApplication.Models.TaskPriority.Critical">Critical Priority</option>
+                            </select>
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Location" class="form-label"></label>
+                        <input asp-for="Location" class="form-control" placeholder="Specific location where the task will be performed" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label"></label>
+                            <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndDate" class="form-label"></label>
+                            <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="RequiredVolunteers" class="form-label"></label>
+                            <input asp-for="RequiredVolunteers" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="RequiredVolunteers" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EstimatedHours" class="form-label">Estimated Hours (Optional)</label>
+                            <input asp-for="EstimatedHours" type="number" min="1" class="form-control" placeholder="Approximate hours needed" />
+                            <span asp-validation-for="EstimatedHours" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RequiredSkills" class="form-label">Required Skills (Optional)</label>
+                        <input asp-for="RequiredSkills" class="form-control" placeholder="e.g., First Aid, Construction, Communication, etc." />
+                        <span asp-validation-for="RequiredSkills" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Equipment" class="form-label">Required Equipment (Optional)</label>
+                        <input asp-for="Equipment" class="form-control" placeholder="e.g., Safety gear, Tools, Vehicles, etc." />
+                        <span asp-validation-for="Equipment" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label">Additional Notes (Optional)</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any additional information, special instructions, or requirements"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to List
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Create Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Task Creation Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-edit text-primary me-2"></i>Clear Descriptions</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Be specific about what volunteers will do</li>
+                            <li>• Include time estimates</li>
+                            <li>• Mention any physical requirements</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-calendar text-success me-2"></i>Scheduling</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Set realistic start and end times</li>
+                            <li>• Consider volunteer availability</li>
+                            <li>• Allow time for setup and cleanup</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-users text-warning me-2"></i>Volunteer Management</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Specify required number of volunteers</li>
+                            <li>• List necessary skills or experience</li>
+                            <li>• Mention equipment requirements</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-exclamation-triangle text-danger me-2"></i>Safety First</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Include safety requirements</li>
+                            <li>• Mention any risks or hazards</li>
+                            <li>• Specify required safety equipment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto-set end date to be after start date
+        document.getElementById('StartDate').addEventListener('change', function() {
+            const startDate = new Date(this.value);
+            const endDateInput = document.getElementById('EndDate');
+            
+            if (startDate && !endDateInput.value) {
+                // Set end date to 2 hours after start date by default
+                const endDate = new Date(startDate.getTime() + (2 * 60 * 60 * 1000));
+                endDateInput.value = endDate.toISOString().slice(0, 16);
+            }
+        });
+    </script>
+}

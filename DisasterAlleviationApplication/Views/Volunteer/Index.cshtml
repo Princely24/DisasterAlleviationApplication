@@ -1,0 +1,180 @@
+@model IEnumerable<DisasterAlleviationApplication.Models.Volunteer>
+
+@{
+    ViewData["Title"] = "Volunteers";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users me-2"></i>Volunteers</h2>
+    <a asp-action="Create" class="btn btn-info">
+        <i class="fas fa-user-plus me-1"></i>Register as Volunteer
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Volunteers</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Location</th>
+                                    <th>Skills</th>
+                                    <th>Status</th>
+                                    <th>Hours</th>
+                                    <th>Registration Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.FirstName @item.LastName</strong>
+                                            @if (item.HasBackgroundCheck)
+                                            {
+                                                <br><span class="badge bg-success small">Background Checked</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @item.Email<br>
+                                            <small class="text-muted">@item.PhoneNumber</small>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.City))
+                                            {
+                                                @item.City
+                                                @if (!string.IsNullOrEmpty(item.State))
+                                                {
+                                                    <text>, @item.State</text>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not specified</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Skills))
+                                            {
+                                                <small>@(item.Skills.Length > 50 ? item.Skills.Substring(0, 50) + "..." : item.Skills)</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not specified</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(item.Status switch {
+                                                DisasterAlleviationApplication.Models.VolunteerStatus.Pending => "warning",
+                                                DisasterAlleviationApplication.Models.VolunteerStatus.Approved => "success",
+                                                DisasterAlleviationApplication.Models.VolunteerStatus.Active => "primary",
+                                                DisasterAlleviationApplication.Models.VolunteerStatus.Inactive => "secondary",
+                                                DisasterAlleviationApplication.Models.VolunteerStatus.Suspended => "danger",
+                                                _ => "secondary"
+                                            })">@item.Status</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@item.TotalHoursVolunteered</span>
+                                        </td>
+                                        <td>
+                                            @item.RegistrationDate.ToString("MMM dd, yyyy")
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (item.UserId == ViewBag.CurrentUserId)
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Volunteers Registered</h4>
+                        <p class="text-muted">Be the first to register as a volunteer and help make a difference.</p>
+                        <a asp-action="Create" class="btn btn-info">
+                            <i class="fas fa-user-plus me-1"></i>Register as Volunteer
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-info mb-3"></i>
+                <h5>Total Volunteers</h5>
+                <h2 class="text-info">@Model.Count()</h2>
+                <p class="text-muted mb-0">Registered volunteers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <i class="fas fa-check fa-3x text-success mb-3"></i>
+                <h5>Approved</h5>
+                <h2 class="text-success">@Model.Count(v => v.Status == DisasterAlleviationApplication.Models.VolunteerStatus.Approved || v.Status == DisasterAlleviationApplication.Models.VolunteerStatus.Active)</h2>
+                <p class="text-muted mb-0">Ready to help</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                <h5>Pending</h5>
+                <h2 class="text-warning">@Model.Count(v => v.Status == DisasterAlleviationApplication.Models.VolunteerStatus.Pending)</h2>
+                <p class="text-muted mb-0">Awaiting approval</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                <h5>Total Hours</h5>
+                <h2 class="text-primary">@Model.Sum(v => v.TotalHoursVolunteered)</h2>
+                <p class="text-muted mb-0">Volunteer hours</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add current user ID to view bag for comparison
+        @{
+            ViewBag.CurrentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        }
+    </script>
+}

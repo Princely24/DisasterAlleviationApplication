@@ -1,0 +1,145 @@
+@model DisasterAlleviationApplication.Models.DisasterIncident
+
+@{
+    ViewData["Title"] = "Report Incident";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Report Disaster Incident
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Brief description of the incident" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Type" class="form-label"></label>
+                            <select asp-for="Type" class="form-select">
+                                <option value="">Select Disaster Type</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Flood">Flood</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Fire">Fire</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Earthquake">Earthquake</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Hurricane">Hurricane</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Tornado">Tornado</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Drought">Drought</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Pandemic">Pandemic</option>
+                                <option value="@DisasterAlleviationApplication.Models.DisasterType.Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Detailed description of the incident, including what happened, when, and any immediate needs"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Severity" class="form-label"></label>
+                            <select asp-for="Severity" class="form-select">
+                                <option value="@DisasterAlleviationApplication.Models.IncidentSeverity.Low">Low - Minor impact</option>
+                                <option value="@DisasterAlleviationApplication.Models.IncidentSeverity.Medium">Medium - Moderate impact</option>
+                                <option value="@DisasterAlleviationApplication.Models.IncidentSeverity.High">High - Significant impact</option>
+                                <option value="@DisasterAlleviationApplication.Models.IncidentSeverity.Critical">Critical - Severe impact</option>
+                            </select>
+                            <span asp-validation-for="Severity" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="IncidentDate" class="form-label"></label>
+                            <input asp-for="IncidentDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="IncidentDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Location" class="form-label"></label>
+                        <input asp-for="Location" class="form-control" placeholder="Specific location or address" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="City" class="form-label"></label>
+                            <input asp-for="City" class="form-control" />
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="State" class="form-label"></label>
+                            <input asp-for="State" class="form-control" />
+                            <span asp-validation-for="State" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PostalCode" class="form-label"></label>
+                            <input asp-for="PostalCode" class="form-control" />
+                            <span asp-validation-for="PostalCode" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Latitude" class="form-label">Latitude (Optional)</label>
+                            <input asp-for="Latitude" type="number" step="any" class="form-control" placeholder="e.g., 40.7128" />
+                            <span asp-validation-for="Latitude" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Longitude" class="form-label">Longitude (Optional)</label>
+                            <input asp-for="Longitude" type="number" step="any" class="form-control" placeholder="e.g., -74.0060" />
+                            <span asp-validation-for="Longitude" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EstimatedAffectedPeople" class="form-label">Estimated Affected People (Optional)</label>
+                            <input asp-for="EstimatedAffectedPeople" type="number" class="form-control" placeholder="Approximate number" />
+                            <span asp-validation-for="EstimatedAffectedPeople" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AdditionalNotes" class="form-label">Additional Notes (Optional)</label>
+                        <textarea asp-for="AdditionalNotes" class="form-control" rows="3" placeholder="Any additional information, contact details, or special instructions"></textarea>
+                        <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AttachmentFile" class="form-label">
+                            <i class="fas fa-paperclip me-1"></i>Attach Image or PDF (Optional)
+                        </label>
+                        <input asp-for="AttachmentFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.gif,.pdf" />
+                        <span asp-validation-for="AttachmentFile" class="text-danger"></span>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>Accepted formats: JPG, PNG, GIF, PDF. Maximum size: 10MB
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to List
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-paper-plane me-1"></i>Report Incident
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

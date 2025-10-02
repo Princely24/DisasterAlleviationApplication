@@ -1,0 +1,177 @@
+@model IEnumerable<DisasterAlleviationApplication.Models.VolunteerTask>
+
+@{
+    ViewData["Title"] = "Volunteer Tasks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tasks me-2"></i>Volunteer Tasks</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Create New Task
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Available Tasks</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Location</th>
+                                    <th>Date Range</th>
+                                    <th>Volunteers</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.Title</strong>
+                                            @if (!string.IsNullOrEmpty(item.Description))
+                                            {
+                                                <br><small class="text-muted">@(item.Description.Length > 80 ? item.Description.Substring(0, 80) + "..." : item.Description)</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@item.Category</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(item.Priority switch {
+                                                DisasterAlleviationApplication.Models.TaskPriority.Low => "success",
+                                                DisasterAlleviationApplication.Models.TaskPriority.Medium => "warning",
+                                                DisasterAlleviationApplication.Models.TaskPriority.High => "danger",
+                                                DisasterAlleviationApplication.Models.TaskPriority.Critical => "dark",
+                                                _ => "secondary"
+                                            })">@item.Priority</span>
+                                        </td>
+                                        <td>
+                                            @item.Location
+                                        </td>
+                                        <td>
+                                            <small>
+                                                Start: @item.StartDate.ToString("MMM dd, yyyy")<br>
+                                                End: @item.EndDate.ToString("MMM dd, yyyy")
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@item.CurrentVolunteers / @item.RequiredVolunteers</span>
+                                            @if (item.EstimatedHours.HasValue)
+                                            {
+                                                <br><small class="text-muted">@item.EstimatedHours hours</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(item.Status switch {
+                                                DisasterAlleviationApplication.Models.TaskStatus.Open => "success",
+                                                DisasterAlleviationApplication.Models.TaskStatus.Assigned => "info",
+                                                DisasterAlleviationApplication.Models.TaskStatus.InProgress => "primary",
+                                                DisasterAlleviationApplication.Models.TaskStatus.Completed => "success",
+                                                DisasterAlleviationApplication.Models.TaskStatus.Cancelled => "danger",
+                                                _ => "secondary"
+                                            })">@item.Status</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (item.Status == DisasterAlleviationApplication.Models.TaskStatus.Open && item.CurrentVolunteers < item.RequiredVolunteers)
+                                                {
+                                                    <a asp-action="Apply" asp-route-id="@item.Id" class="btn btn-sm btn-success" title="Apply for Task">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </a>
+                                                }
+                                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Tasks Available</h4>
+                        <p class="text-muted">Be the first to create a volunteer task.</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Create Your First Task
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <i class="fas fa-tasks fa-3x text-success mb-3"></i>
+                <h5>Open Tasks</h5>
+                <h2 class="text-success">@Model.Count(t => t.Status == DisasterAlleviationApplication.Models.TaskStatus.Open)</h2>
+                <p class="text-muted mb-0">Available for volunteers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <i class="fas fa-play fa-3x text-primary mb-3"></i>
+                <h5>In Progress</h5>
+                <h2 class="text-primary">@Model.Count(t => t.Status == DisasterAlleviationApplication.Models.TaskStatus.InProgress)</h2>
+                <p class="text-muted mb-0">Currently active</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <i class="fas fa-check fa-3x text-info mb-3"></i>
+                <h5>Completed</h5>
+                <h2 class="text-info">@Model.Count(t => t.Status == DisasterAlleviationApplication.Models.TaskStatus.Completed)</h2>
+                <p class="text-muted mb-0">Successfully finished</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-warning mb-3"></i>
+                <h5>Total Volunteers</h5>
+                <h2 class="text-warning">@Model.Sum(t => t.CurrentVolunteers)</h2>
+                <p class="text-muted mb-0">Across all tasks</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh every 30 seconds to show updated task status
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}

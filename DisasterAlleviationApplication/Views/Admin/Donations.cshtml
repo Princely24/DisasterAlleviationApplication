@@ -1,0 +1,85 @@
+@model List<DisasterAlleviationApplication.Models.Donation>
+
+@{
+    ViewData["Title"] = "Manage Donations";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Type</th>
+                                <th>Donor</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var donation in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@donation.ItemName</strong>
+                                        @if (donation.IsUrgent)
+                                        {
+                                            <span class="badge bg-danger ms-1">Urgent</span>
+                                        }
+                                    </td>
+                                    <td>@donation.Category?.Name</td>
+                                    <td>@donation.Quantity @donation.Unit</td>
+                                    <td>
+                                        <span class="badge bg-info">@donation.Type</span>
+                                    </td>
+                                    <td>@donation.User?.Email</td>
+                                    <td>@donation.DonationDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <form asp-action="UpdateDonationStatus" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@donation.Id" />
+                                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="@DisasterAlleviationApplication.Models.DonationStatus.Pending" selected="@(donation.Status == DisasterAlleviationApplication.Models.DonationStatus.Pending)">Pending</option>
+                                                <option value="@DisasterAlleviationApplication.Models.DonationStatus.Approved" selected="@(donation.Status == DisasterAlleviationApplication.Models.DonationStatus.Approved)">Approved</option>
+                                                <option value="@DisasterAlleviationApplication.Models.DonationStatus.Collected" selected="@(donation.Status == DisasterAlleviationApplication.Models.DonationStatus.Collected)">Collected</option>
+                                                <option value="@DisasterAlleviationApplication.Models.DonationStatus.InTransit" selected="@(donation.Status == DisasterAlleviationApplication.Models.DonationStatus.InTransit)">In Transit</option>
+                                                <option value="@DisasterAlleviationApplication.Models.DonationStatus.Distributed" selected="@(donation.Status == DisasterAlleviationApplication.Models.DonationStatus.Distributed)">Distributed</option>
+                                                <option value="@DisasterAlleviationApplication.Models.DonationStatus.Rejected" selected="@(donation.Status == DisasterAlleviationApplication.Models.DonationStatus.Rejected)">Rejected</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Donation" asp-action="Details" asp-route-id="@donation.Id" class="btn btn-sm btn-info" title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No donations found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

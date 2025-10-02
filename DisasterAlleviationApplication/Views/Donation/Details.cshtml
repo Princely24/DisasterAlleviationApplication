@@ -1,0 +1,212 @@
+@model DisasterAlleviationApplication.Models.Donation
+
+@{
+    ViewData["Title"] = "Donation Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-gift me-2"></i>Donation Details
+                </h4>
+                <div>
+                    <span class="badge bg-@(Model.Status switch {
+                        DisasterAlleviationApplication.Models.DonationStatus.Pending => "warning",
+                        DisasterAlleviationApplication.Models.DonationStatus.Approved => "info",
+                        DisasterAlleviationApplication.Models.DonationStatus.Collected => "primary",
+                        DisasterAlleviationApplication.Models.DonationStatus.InTransit => "secondary",
+                        DisasterAlleviationApplication.Models.DonationStatus.Distributed => "success",
+                        DisasterAlleviationApplication.Models.DonationStatus.Rejected => "danger",
+                        _ => "secondary"
+                    }) fs-6">@Model.Status</span>
+                    @if (Model.IsUrgent)
+                    {
+                        <span class="badge bg-danger fs-6 ms-1">Urgent</span>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Donation Information
+                        </h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="fw-bold">Item Name:</td>
+                                <td>@Model.ItemName</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Category:</td>
+                                <td><span class="badge bg-secondary">@Model.Category?.Name</span></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Quantity:</td>
+                                <td>@Model.Quantity @Model.Unit</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Type:</td>
+                                <td><span class="badge bg-@(Model.Type switch {
+                                    DisasterAlleviationApplication.Models.DonationType.Physical => "primary",
+                                    DisasterAlleviationApplication.Models.DonationType.Financial => "success",
+                                    DisasterAlleviationApplication.Models.DonationType.Service => "info",
+                                    _ => "secondary"
+                                })">@Model.Type</span></td>
+                            </tr>
+                            @if (Model.EstimatedValue.HasValue)
+                            {
+                                <tr>
+                                    <td class="fw-bold">Estimated Value:</td>
+                                    <td class="text-success fw-bold">R@(Model.EstimatedValue.Value.ToString("F2"))</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="fw-bold">Donation Date:</td>
+                                <td>@Model.DonationDate.ToString("MMMM dd, yyyy 'at' h:mm tt")</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-success mb-3">
+                            <i class="fas fa-user me-2"></i>Donor Information
+                        </h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="fw-bold">Donated By:</td>
+                                <td>@Model.User?.FirstName @Model.User?.LastName</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Email:</td>
+                                <td>@Model.User?.Email</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(Model.User?.PhoneNumber))
+                            {
+                                <tr>
+                                    <td class="fw-bold">Phone:</td>
+                                    <td>@Model.User.PhoneNumber</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="mt-4">
+                        <h5 class="text-info mb-3">
+                            <i class="fas fa-align-left me-2"></i>Description
+                        </h5>
+                        <div class="border rounded p-3 bg-light">
+                            @Model.Description
+                        </div>
+                    </div>
+                }
+
+                @if (Model.PickupLocation != null || Model.PickupDate != null)
+                {
+                    <div class="mt-4">
+                        <h5 class="text-warning mb-3">
+                            <i class="fas fa-truck me-2"></i>Pickup Information
+                        </h5>
+                        <div class="row">
+                            @if (!string.IsNullOrEmpty(Model.PickupLocation))
+                            {
+                                <div class="col-md-6">
+                                    <p><strong>Pickup Location:</strong> @Model.PickupLocation</p>
+                                </div>
+                            }
+                            @if (Model.PickupDate.HasValue)
+                            {
+                                <div class="col-md-6">
+                                    <p><strong>Preferred Pickup Date:</strong> @Model.PickupDate.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (Model.DistributionLocation != null || Model.DistributionDate != null)
+                {
+                    <div class="mt-4">
+                        <h5 class="text-success mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i>Distribution Information
+                        </h5>
+                        <div class="row">
+                            @if (!string.IsNullOrEmpty(Model.DistributionLocation))
+                            {
+                                <div class="col-md-6">
+                                    <p><strong>Distribution Location:</strong> @Model.DistributionLocation</p>
+                                </div>
+                            }
+                            @if (Model.DistributionDate.HasValue)
+                            {
+                                <div class="col-md-6">
+                                    <p><strong>Distribution Date:</strong> @Model.DistributionDate.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mt-4">
+                        <h5 class="text-secondary mb-3">
+                            <i class="fas fa-sticky-note me-2"></i>Additional Notes
+                        </h5>
+                        <div class="border rounded p-3 bg-light">
+                            @Model.Notes
+                        </div>
+                    </div>
+                }
+
+                @if (Model.ExpiryDate.HasValue)
+                {
+                    <div class="alert alert-warning mt-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Expiry Date:</strong> This item expires on @Model.ExpiryDate.Value.ToString("MMMM dd, yyyy")
+                        @{
+                            var daysUntilExpiry = (Model.ExpiryDate.Value - DateTime.Now).Days;
+                            if (daysUntilExpiry < 7)
+                            {
+                                <span class="badge bg-danger ms-2">Expires Soon!</span>
+                            }
+                            else if (daysUntilExpiry < 30)
+                            {
+                                <span class="badge bg-warning ms-2">Expires in @daysUntilExpiry days</span>
+                            }
+                        }
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                    <div>
+                        @if (Model.UserId == ViewBag.CurrentUserId && Model.Status == DisasterAlleviationApplication.Models.DonationStatus.Pending)
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Delete
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add current user ID to view bag for comparison
+        @{
+            ViewBag.CurrentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        }
+    </script>
+}

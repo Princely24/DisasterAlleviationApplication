@@ -1,0 +1,127 @@
+@model IEnumerable<DisasterAlleviationApplication.Models.DisasterIncident>
+
+@{
+    ViewData["Title"] = "Disaster Incidents";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-exclamation-triangle me-2"></i>Disaster Incidents</h2>
+    <a asp-action="Create" class="btn btn-danger">
+        <i class="fas fa-plus me-1"></i>Report New Incident
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Reported Incidents</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>Location</th>
+                                    <th>Incident Date</th>
+                                    <th>Status</th>
+                                    <th>Reporter</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.Title</strong>
+                                            @if (!string.IsNullOrEmpty(item.Description))
+                                            {
+                                                <br><small class="text-muted">@(item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@item.Type</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(item.Severity switch {
+                                                DisasterAlleviationApplication.Models.IncidentSeverity.Low => "success",
+                                                DisasterAlleviationApplication.Models.IncidentSeverity.Medium => "warning",
+                                                DisasterAlleviationApplication.Models.IncidentSeverity.High => "danger",
+                                                DisasterAlleviationApplication.Models.IncidentSeverity.Critical => "dark",
+                                                _ => "secondary"
+                                            })">@item.Severity</span>
+                                        </td>
+                                        <td>
+                                            @item.Location<br>
+                                            <small class="text-muted">@item.City, @item.State @item.PostalCode</small>
+                                        </td>
+                                        <td>
+                                            @item.IncidentDate.ToString("MMM dd, yyyy")<br>
+                                            <small class="text-muted">Reported: @item.ReportedDate.ToString("MMM dd, yyyy")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(item.Status switch {
+                                                DisasterAlleviationApplication.Models.IncidentStatus.Reported => "warning",
+                                                DisasterAlleviationApplication.Models.IncidentStatus.UnderReview => "info",
+                                                DisasterAlleviationApplication.Models.IncidentStatus.InProgress => "primary",
+                                                DisasterAlleviationApplication.Models.IncidentStatus.Resolved => "success",
+                                                DisasterAlleviationApplication.Models.IncidentStatus.Closed => "secondary",
+                                                _ => "secondary"
+                                            })">@item.Status</span>
+                                        </td>
+                                        <td>
+                                            @item.User?.FirstName @item.User?.LastName
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (item.UserId == ViewBag.CurrentUserId)
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Incidents Reported</h4>
+                        <p class="text-muted">Be the first to report a disaster incident in your area.</p>
+                        <a asp-action="Create" class="btn btn-danger">
+                            <i class="fas fa-plus me-1"></i>Report an Incident
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add current user ID to view bag for comparison
+        @{
+            ViewBag.CurrentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        }
+    </script>
+}
+

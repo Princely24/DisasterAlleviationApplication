@@ -1,0 +1,88 @@
+@model List<DisasterAlleviationApplication.Models.DisasterIncident>
+
+@{
+    ViewData["Title"] = "Manage Incidents";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Severity</th>
+                                <th>Location</th>
+                                <th>Reported Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var incident in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@incident.Title</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@incident.Type</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(incident.Severity switch {
+                                            DisasterAlleviationApplication.Models.IncidentSeverity.Low => "success",
+                                            DisasterAlleviationApplication.Models.IncidentSeverity.Medium => "warning",
+                                            DisasterAlleviationApplication.Models.IncidentSeverity.High => "danger",
+                                            DisasterAlleviationApplication.Models.IncidentSeverity.Critical => "dark",
+                                            _ => "secondary"
+                                        })">
+                                            @incident.Severity
+                                        </span>
+                                    </td>
+                                    <td>@incident.City, @incident.State</td>
+                                    <td>@incident.ReportedDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <form asp-action="UpdateIncidentStatus" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@incident.Id" />
+                                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="@DisasterAlleviationApplication.Models.IncidentStatus.Reported" selected="@(incident.Status == DisasterAlleviationApplication.Models.IncidentStatus.Reported)">Reported</option>
+                                                <option value="@DisasterAlleviationApplication.Models.IncidentStatus.UnderReview" selected="@(incident.Status == DisasterAlleviationApplication.Models.IncidentStatus.UnderReview)">Under Review</option>
+                                                <option value="@DisasterAlleviationApplication.Models.IncidentStatus.InProgress" selected="@(incident.Status == DisasterAlleviationApplication.Models.IncidentStatus.InProgress)">In Progress</option>
+                                                <option value="@DisasterAlleviationApplication.Models.IncidentStatus.Resolved" selected="@(incident.Status == DisasterAlleviationApplication.Models.IncidentStatus.Resolved)">Resolved</option>
+                                                <option value="@DisasterAlleviationApplication.Models.IncidentStatus.Closed" selected="@(incident.Status == DisasterAlleviationApplication.Models.IncidentStatus.Closed)">Closed</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Incident" asp-action="Details" asp-route-id="@incident.Id" class="btn btn-sm btn-info" title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No incidents found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

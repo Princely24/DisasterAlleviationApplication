@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Admin Login";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg">
+            <div class="card-header bg-warning text-dark text-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-user-shield me-2"></i>Administrator Login
+                </h3>
+            </div>
+            <div class="card-body p-5">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Admin Access:</strong> Please use your administrator credentials to access the admin panel.
+                </div>
+
+                <form method="post" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Admin/Dashboard">
+                    <div class="mb-4">
+                        <label for="Input_Email" class="form-label">
+                            <i class="fas fa-envelope me-1"></i>Email Address
+                        </label>
+                        <input type="email" class="form-control form-control-lg" id="Input_Email" name="Input.Email" placeholder="admin@example.com" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="Input_Password" class="form-label">
+                            <i class="fas fa-lock me-1"></i>Password
+                        </label>
+                        <input type="password" class="form-control form-control-lg" id="Input_Password" name="Input.Password" placeholder="Enter your password" required />
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="Input_RememberMe" name="Input.RememberMe" value="true" />
+                        <label class="form-check-label" for="Input_RememberMe">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Admin Panel
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p class="mb-2">Don't have an admin account?</p>
+                    <a asp-action="Register" class="btn btn-outline-warning mb-3">
+                        <i class="fas fa-user-plus me-1"></i>Create Admin Account
+                    </a>
+                </div>
+
+                <div class="text-center">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Home
+                    </a>
+                </div>
+
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="text-muted mb-2">
+                        <i class="fas fa-shield-alt me-1"></i>Security Notice
+                    </h6>
+                    <small class="text-muted">
+                        This area is restricted to authorized administrators only. All login attempts are logged and monitored.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+        margin-top: 50px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+        padding: 20px;
+    }
+</style>

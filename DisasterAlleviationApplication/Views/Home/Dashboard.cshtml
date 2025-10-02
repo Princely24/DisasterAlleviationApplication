@@ -1,0 +1,264 @@
+@model DisasterAlleviationApplication.Controllers.UserDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt me-2"></i>My Dashboard</h2>
+    <div>
+        <span class="text-muted">Welcome back, @Model.User?.FirstName @Model.User?.LastName!</span>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                <h4>@Model.MyIncidents.Count</h4>
+                <p class="mb-0">My Incidents</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-gift fa-2x mb-2"></i>
+                <h4>@Model.MyDonations.Count</h4>
+                <p class="mb-0">My Donations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-tasks fa-2x mb-2"></i>
+                <h4>@Model.MyTasks.Count</h4>
+                <p class="mb-0">My Tasks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h4>@(Model.VolunteerProfile?.TotalHoursVolunteered ?? 0)</h4>
+                <p class="mb-0">Hours Volunteered</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>My Recent Incidents</h5>
+                <a asp-controller="Incident" asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i>Report New
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.MyIncidents.Any())
+                {
+                    @foreach (var incident in Model.MyIncidents)
+                    {
+                        <div class="border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">@incident.Title</h6>
+                                    <p class="text-muted mb-1 small">@incident.Location - @incident.ReportedDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-@(incident.Severity switch {
+                                        DisasterAlleviationApplication.Models.IncidentSeverity.Low => "success",
+                                        DisasterAlleviationApplication.Models.IncidentSeverity.Medium => "warning",
+                                        DisasterAlleviationApplication.Models.IncidentSeverity.High => "danger",
+                                        DisasterAlleviationApplication.Models.IncidentSeverity.Critical => "dark",
+                                        _ => "secondary"
+                                    })">@incident.Severity</span>
+                                    <br>
+                                    <span class="badge bg-@(incident.Status switch {
+                                        DisasterAlleviationApplication.Models.IncidentStatus.Reported => "warning",
+                                        DisasterAlleviationApplication.Models.IncidentStatus.UnderReview => "info",
+                                        DisasterAlleviationApplication.Models.IncidentStatus.InProgress => "primary",
+                                        DisasterAlleviationApplication.Models.IncidentStatus.Resolved => "success",
+                                        DisasterAlleviationApplication.Models.IncidentStatus.Closed => "secondary",
+                                        _ => "secondary"
+                                    })">@incident.Status</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="text-center mt-3">
+                        <a asp-controller="Incident" asp-action="Index" class="btn btn-outline-primary btn-sm">View All</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">You haven't reported any incidents yet.</p>
+                        <a asp-controller="Incident" asp-action="Create" class="btn btn-primary">Report Your First Incident</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-gift me-2"></i>My Recent Donations</h5>
+                <a asp-controller="Donation" asp-action="Create" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus me-1"></i>Make Donation
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.MyDonations.Any())
+                {
+                    @foreach (var donation in Model.MyDonations)
+                    {
+                        <div class="border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">@donation.ItemName</h6>
+                                    <p class="text-muted mb-1 small">@donation.Quantity @donation.Unit - @donation.DonationDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-@(donation.Status switch {
+                                        DisasterAlleviationApplication.Models.DonationStatus.Pending => "warning",
+                                        DisasterAlleviationApplication.Models.DonationStatus.Approved => "info",
+                                        DisasterAlleviationApplication.Models.DonationStatus.Collected => "primary",
+                                        DisasterAlleviationApplication.Models.DonationStatus.InTransit => "secondary",
+                                        DisasterAlleviationApplication.Models.DonationStatus.Distributed => "success",
+                                        _ => "secondary"
+                                    })">@donation.Status</span>
+                                    @if (donation.IsUrgent)
+                                    {
+                                        <br><span class="badge bg-danger mt-1">Urgent</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="text-center mt-3">
+                        <a asp-controller="Donation" asp-action="Index" class="btn btn-outline-success btn-sm">View All</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-gift fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">You haven't made any donations yet.</p>
+                        <a asp-controller="Donation" asp-action="Create" class="btn btn-success">Make Your First Donation</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.VolunteerProfile != null)
+{
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Volunteer Profile</h5>
+                    <a asp-controller="Volunteer" asp-action="Edit" asp-route-id="@Model.VolunteerProfile.Id" class="btn btn-info btn-sm">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-@(Model.VolunteerProfile.Status switch {
+                                    DisasterAlleviationApplication.Models.VolunteerStatus.Pending => "warning",
+                                    DisasterAlleviationApplication.Models.VolunteerStatus.Approved => "success",
+                                    DisasterAlleviationApplication.Models.VolunteerStatus.Active => "primary",
+                                    DisasterAlleviationApplication.Models.VolunteerStatus.Inactive => "secondary",
+                                    DisasterAlleviationApplication.Models.VolunteerStatus.Suspended => "danger",
+                                    _ => "secondary"
+                                })">@Model.VolunteerProfile.Status</span>
+                            </p>
+                            <p><strong>Skills:</strong> @(Model.VolunteerProfile.Skills ?? "Not specified")</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p><strong>Hours Volunteered:</strong> @Model.VolunteerProfile.TotalHoursVolunteered</p>
+                            <p><strong>Availability:</strong> @(Model.VolunteerProfile.Availability ?? "Not specified")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>My Recent Tasks</h5>
+                    <a asp-controller="Task" asp-action="Index" class="btn btn-warning btn-sm">
+                        <i class="fas fa-search me-1"></i>Browse Tasks
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.MyTasks.Any())
+                    {
+                        @foreach (var task in Model.MyTasks)
+                        {
+                            <div class="border-bottom pb-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">@task.Task.Title</h6>
+                                        <p class="text-muted mb-1 small">@task.Task.Location - Assigned: @task.AssignedDate.ToString("MMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-@(task.Status switch {
+                                            DisasterAlleviationApplication.Models.AssignmentStatus.Assigned => "warning",
+                                            DisasterAlleviationApplication.Models.AssignmentStatus.Accepted => "info",
+                                            DisasterAlleviationApplication.Models.AssignmentStatus.InProgress => "primary",
+                                            DisasterAlleviationApplication.Models.AssignmentStatus.Completed => "success",
+                                            DisasterAlleviationApplication.Models.AssignmentStatus.Cancelled => "danger",
+                                            DisasterAlleviationApplication.Models.AssignmentStatus.NoShow => "dark",
+                                            _ => "secondary"
+                                        })">@task.Status</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="text-center mt-3">
+                            <a asp-controller="Task" asp-action="MyTasks" class="btn btn-outline-warning btn-sm">View All Tasks</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">You haven't been assigned any tasks yet.</p>
+                            <a asp-controller="Task" asp-action="Index" class="btn btn-warning">Browse Available Tasks</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-user-plus fa-4x text-muted mb-4"></i>
+                    <h4>Become a Volunteer</h4>
+                    <p class="text-muted mb-4">Join our volunteer community and help make a difference in disaster relief efforts.</p>
+                    <a asp-controller="Volunteer" asp-action="Create" class="btn btn-info btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Register as Volunteer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

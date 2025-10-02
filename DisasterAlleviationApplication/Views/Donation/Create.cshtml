@@ -1,0 +1,162 @@
+@model DisasterAlleviationApplication.Models.Donation
+
+@{
+    ViewData["Title"] = "Make Donation";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-gift me-2"></i>Make a Donation
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="ItemName" class="form-label"></label>
+                            <input asp-for="ItemName" class="form-control" placeholder="Name of the item you're donating" />
+                            <span asp-validation-for="ItemName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Type" class="form-label"></label>
+                            <select asp-for="Type" class="form-select">
+                                <option value="">Select Donation Type</option>
+                                <option value="@DisasterAlleviationApplication.Models.DonationType.Physical">Physical Item</option>
+                                <option value="@DisasterAlleviationApplication.Models.DonationType.Financial">Financial</option>
+                                <option value="@DisasterAlleviationApplication.Models.DonationType.Service">Service</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Detailed description of the donation"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Quantity" class="form-label"></label>
+                            <input asp-for="Quantity" type="number" class="form-control" min="1" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Unit" class="form-label"></label>
+                            <input asp-for="Unit" class="form-control" placeholder="e.g., pieces, kg, liters, boxes, hours" />
+                            <span asp-validation-for="Unit" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CategoryId" class="form-label"></label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                <option value="">Select Category</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EstimatedValue" class="form-label">Estimated Value (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R</span>
+                                <input asp-for="EstimatedValue" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="EstimatedValue" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PickupLocation" class="form-label">Pickup Location (Optional)</label>
+                            <input asp-for="PickupLocation" class="form-control" placeholder="Where can we collect the donation?" />
+                            <span asp-validation-for="PickupLocation" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PickupDate" class="form-label">Preferred Pickup Date (Optional)</label>
+                            <input asp-for="PickupDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="PickupDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ExpiryDate" class="form-label">Expiry Date (Optional)</label>
+                            <input asp-for="ExpiryDate" type="date" class="form-control" />
+                            <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check mt-4">
+                                <input asp-for="IsUrgent" class="form-check-input" />
+                                <label asp-for="IsUrgent" class="form-check-label">
+                                    <strong>Urgent Donation</strong>
+                                    <br><small class="text-muted">Check if this donation is urgently needed</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label">Additional Notes (Optional)</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any additional information, special handling instructions, or contact details"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to List
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-gift me-1"></i>Submit Donation
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Donation Guidelines
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-utensils text-primary me-2"></i>Food Items</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Non-perishable items only</li>
+                            <li>• Unopened packages</li>
+                            <li>• Check expiry dates</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-tshirt text-success me-2"></i>Clothing</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Clean and in good condition</li>
+                            <li>• Weather-appropriate</li>
+                            <li>• All sizes needed</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-medkit text-danger me-2"></i>Medical Supplies</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Unopened medical supplies</li>
+                            <li>• Check expiry dates</li>
+                            <li>• Include prescriptions if applicable</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
