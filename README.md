@@ -42,7 +42,7 @@ A comprehensive web application for managing disaster relief operations, includi
 ### 1. Clone the Repository
 
 ```powershell
-git clone https://dev.azure.com/YOUR-ORG/DisasterReliefApplication/_git/DisasterReliefApp
+git clone https://dev.azure.com/GiftOfTheGivers-DisasterPlatform/DisasterReliefApplication/_git/DisasterReliefApp
 cd DisasterReliefApp
 ```
 
